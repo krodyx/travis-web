@@ -165,35 +165,6 @@ export default function () {
 
   this.get('/jobs');
 
-  this.get('/repo/:repository_id/builds', function (schema, { params, queryParams: { event_type: eventType, after_number: afterNumber, ids } }) {
-
-    const allBuilds = schema.builds.all();
-    let builds;
-
-    if (afterNumber) {
-      builds = allBuilds.models.filter(build => build.number < afterNumber);
-    } else if (ids) {
-      builds = allBuilds.models.filter(build => ids.indexOf(build.id) > -1);
-    } else if (eventType === 'pull_request') {
-      builds = allBuilds.models;
-    } else {
-      // This forces the Show more button to show in the build history test
-      builds = allBuilds.models.slice(0, 3);
-    }
-
-    return { builds: builds.map(build => {
-      if (build.commit) {
-        build.attrs.commit_id = build.commit.id;
-      }
-
-      if (build.jobs) {
-        build.attrs.job_ids = build.jobs.models.map(job => job.id);
-      }
-
-      return build;
-    }), commits: builds.map(build => build.commit) };
-  });
-
   this.get('/build/:id', function (schema, request) {
     const build = schema.builds.find(request.params.id);
     const response = {
@@ -278,18 +249,21 @@ export default function () {
     }
   });
 
-  this.get('/v3/repo/:repo_id/builds', function (schema, request) {
-    const branch = schema.branches.where({ name: request.queryParams['branch.name'] }).models[0];
-    const builds = schema.builds.where({ branchId: branch.id });
+  this.get('/repo/:repo_id/builds', function (schema, request) {
+    console.log(schema.builds.all());
+    const builds = schema.builds.where({ repositoryId: request.params.repo_id });
 
-    /**
-      * TODO remove this once the seializers/build is removed.
-      * The modelName causes Mirage to know how to serialise it.
-      */
-    return this.serialize({
-      models: builds.models.reverse(),
-      modelName: 'build'
-    }, 'v3');
+    const serialized = { builds: [] };
+    serialized.builds = builds.models.reverse().map(build => {
+      console.log('build.commit', build.commit);
+      // if (build.commit) {
+      //   build.commit =
+      // }
+      this.serialize(build, 'v3');
+    });
+
+    console.log({serialized});
+    return serialized;
   });
 
   this.get('/jobs/:id/log', function (schema, request) {

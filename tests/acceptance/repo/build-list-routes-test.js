@@ -33,7 +33,7 @@ moduleForAcceptance('Acceptance | repo build list routes', {
       finished_at: oneYearAgo,
       started_at: beforeOneYearAgo,
       event_type: 'cron',
-      repository_id: this.repoId
+      repository,
     });
 
     const commitAttributes = {
@@ -49,7 +49,7 @@ moduleForAcceptance('Acceptance | repo build list routes', {
     const failedBuild = this.branch.createBuild({
       state: 'failed',
       event_type: 'push',
-      repository_id: this.repoId,
+      repositoryId: this.repoId,
       number: '1885'
     });
 
@@ -59,7 +59,7 @@ moduleForAcceptance('Acceptance | repo build list routes', {
     const erroredBuild = this.branch.createBuild({
       state: 'errored',
       event_type: 'push',
-      repository_id: this.repoId,
+      repositoryId: this.repoId,
       number: '1869'
     });
 
@@ -74,7 +74,7 @@ moduleForAcceptance('Acceptance | repo build list routes', {
     const defaultBranchBuild = defaultBranch.createBuild({
       number: '1491',
       event_type: 'push',
-      repository_id: this.repoId
+      repositoryId: this.repoId
     });
 
     defaultBranchBuild.createCommit(Object.assign({}, commitAttributes, {
@@ -89,7 +89,7 @@ moduleForAcceptance('Acceptance | repo build list routes', {
       started_at: beforeOneYearAgo,
       event_type: 'pull_request',
       pull_request_number: 2010,
-      repository_id: this.repoId,
+      repositoryId: this.repoId,
       pull_request_title: 'A pull request'
     });
 
@@ -98,7 +98,7 @@ moduleForAcceptance('Acceptance | repo build list routes', {
 
     pullRequestBuild.createJob({
       number: '1919.1',
-      repository_id: this.repoId,
+      repositoryId: this.repoId,
       state: 'started',
       build: pullRequestBuild,
       commit_id: pullRequestCommit.id
@@ -133,7 +133,7 @@ test('build history shows, more can be loaded, and a created build gets added an
     // Add another build so the API has more to return
     const olderBuild = this.branch.createBuild({
       event_type: 'push',
-      repository_id: this.repoId,
+      repositoryId: this.repoId,
       number: '1816'
     });
 
@@ -158,7 +158,7 @@ test('build history shows, more can be loaded, and a created build gets added an
   const buildEventDataTemplate = {
     build: {
       id: '2016',
-      repository_id: this.repoId,
+      repositoryId: this.repoId,
       number: '2016',
       pull_request: false,
       event_type: 'push',
