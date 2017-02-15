@@ -250,20 +250,14 @@ export default function () {
   });
 
   this.get('/repo/:repo_id/builds', function (schema, request) {
-    console.log(schema.builds.all());
     const builds = schema.builds.where({ repositoryId: request.params.repo_id });
+    console.log({builds});
 
-    const serialized = { builds: [] };
-    serialized.builds = builds.models.reverse().map(build => {
-      console.log('build.commit', build.commit);
-      // if (build.commit) {
-      //   build.commit =
-      // }
-      this.serialize(build, 'v3');
-    });
-
-    console.log({serialized});
-    return serialized;
+    /**
+      * TODO remove this once the seializers/build is removed.
+      * The modelName causes Mirage to know how to serialise it.
+      */
+    return this.serialize(builds, 'build');
   });
 
   this.get('/jobs/:id/log', function (schema, request) {
@@ -276,13 +270,13 @@ export default function () {
   });
 
   // UNCOMMENT THIS FOR LOGGING OF HANDLED REQUESTS
-  // this.pretender.handledRequest = function (verb, path, request) {
-  //   console.log('Handled this request:', `${verb} ${path}`, request);
-  //   try {
-  //     const responseJson = JSON.parse(request.responseText);
-  //     console.log(responseJson);
-  //   } catch (e) {}
-  // };
+  this.pretender.handledRequest = function (verb, path, request) {
+    console.log('Handled this request:', `${verb} ${path}`, request);
+    try {
+      const responseJson = JSON.parse(request.responseText);
+      console.log(responseJson);
+    } catch (e) {}
+  };
 }
 
 /*

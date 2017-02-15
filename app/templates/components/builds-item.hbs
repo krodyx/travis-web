@@ -8,6 +8,7 @@
         {{/link-to}}
       {{else}}
         {{#link-to "build" build.repo build title=build.commit.sha}}
+          {{log "branch" build.branch}}
           {{build.branchName}}
         {{/link-to}}
       {{/if}}
