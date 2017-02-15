@@ -4,16 +4,13 @@ var Serializer = V3Serializer.extend({
   isNewSerializerAPI: true,
 
   attrs: {
-    startedAt: { key: 'started_at' },
-    finishedAt: { key: 'finishedAt' },
+    _config: { key: 'config' },
+    _duration: { key: 'duration' },
   },
 
   extractRelationship(relationshipModelName, relationshipHash) {
     if (relationshipModelName === 'repo') {
       relationshipHash['@type'] = 'repo';
-    }
-    if (relationshipModelName === 'branch') {
-      console.log('extractRelationship', this._super(...arguments));
     }
     return this._super(...arguments);
   },

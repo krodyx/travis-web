@@ -27,6 +27,8 @@ moduleForAcceptance('Acceptance | repo build list routes', {
 
     const beforeOneYearAgo = new Date(oneYearAgo.getTime() - 1000 * 60 * 5);
 
+    const cronBranch = server.create('branch', { name: 'successful-cron-branch' });
+
     const lastBuild = server.create('build', {
       state: 'passed',
       number: '1919',
@@ -34,7 +36,7 @@ moduleForAcceptance('Acceptance | repo build list routes', {
       started_at: beforeOneYearAgo,
       event_type: 'cron',
       repository,
-      branch: this.branch,
+      branch: cronBranch,
     });
 
     const commitAttributes = {
@@ -42,9 +44,7 @@ moduleForAcceptance('Acceptance | repo build list routes', {
       author_name: currentUser.name
     };
 
-    lastBuild.createCommit(Ember.assign({
-      branch: 'successful-cron-branch'
-    }, commitAttributes));
+    lastBuild.createCommit(commitAttributes);
     lastBuild.save();
 
     const failedBuild = server.create('build', {

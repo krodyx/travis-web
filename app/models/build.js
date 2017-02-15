@@ -18,7 +18,7 @@ export default Model.extend(DurationCalculations, {
   state: attr(),
   number: attr('number'),
   message: attr('string'),
-  duration: attr('number'),
+  _duration: attr('number'),
   startedAt: attr('string'),
   finishedAt: attr('string'),
   pullRequestNumber: attr('number'),

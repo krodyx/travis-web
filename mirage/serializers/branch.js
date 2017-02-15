@@ -21,7 +21,7 @@ export default Serializer.extend({
     let response = {
       '@type': 'branch',
       '@href': `/repo/${repositoryId}/branch/${name}`,
-      '@representation': 'minimal',
+      '@representation': 'standard',
       name,
     };
 
