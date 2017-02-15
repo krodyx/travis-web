@@ -20,20 +20,21 @@ moduleForAcceptance('Acceptance | repo build list routes', {
 
     this.repoId = parseInt(repository.id);
 
-    this.branch = server.create('branch');
+    this.branch = server.create('branch', { name: 'foobar' });
 
     const oneYearAgo = new Date();
     oneYearAgo.setYear(oneYearAgo.getFullYear() - 1);
 
     const beforeOneYearAgo = new Date(oneYearAgo.getTime() - 1000 * 60 * 5);
 
-    const lastBuild = this.branch.createBuild({
+    const lastBuild = server.create('build', {
       state: 'passed',
       number: '1919',
       finished_at: oneYearAgo,
       started_at: beforeOneYearAgo,
       event_type: 'cron',
       repository,
+      branch: this.branch,
     });
 
     const commitAttributes = {
@@ -46,35 +47,39 @@ moduleForAcceptance('Acceptance | repo build list routes', {
     }, commitAttributes));
     lastBuild.save();
 
-    const failedBuild = this.branch.createBuild({
+    const failedBuild = server.create('build', {
       state: 'failed',
       event_type: 'push',
       repositoryId: this.repoId,
-      number: '1885'
+      number: '1885',
+      branch: this.branch,
     });
 
     failedBuild.createCommit(commitAttributes);
     failedBuild.save();
 
-    const erroredBuild = this.branch.createBuild({
+    const erroredBuild = server.create('build', {
       state: 'errored',
       event_type: 'push',
       repositoryId: this.repoId,
-      number: '1869'
+      number: '1869',
+      branch: this.branch,
     });
 
     erroredBuild.createCommit(commitAttributes);
     erroredBuild.save();
 
-    const defaultBranch = repository.createBranch({
+    const defaultBranch = server.create('branch', {
       name: 'rarely-used',
-      default_branch: true
+      default_branch: true,
+      repository: this.repository,
     });
 
-    const defaultBranchBuild = defaultBranch.createBuild({
+    const defaultBranchBuild = server.create('build', {
       number: '1491',
       event_type: 'push',
-      repositoryId: this.repoId
+      repositoryId: this.repoId,
+      branch: defaultBranch,
     });
 
     defaultBranchBuild.createCommit(Object.assign({}, commitAttributes, {
@@ -82,7 +87,7 @@ moduleForAcceptance('Acceptance | repo build list routes', {
     }));
     defaultBranchBuild.save();
 
-    const pullRequestBuild = this.branch.createBuild({
+    const pullRequestBuild = server.create('build', {
       state: 'started',
       number: '1919',
       finished_at: oneYearAgo,
@@ -90,7 +95,8 @@ moduleForAcceptance('Acceptance | repo build list routes', {
       event_type: 'pull_request',
       pull_request_number: 2010,
       repositoryId: this.repoId,
-      pull_request_title: 'A pull request'
+      pull_request_title: 'A pull request',
+      branch: this.branch,
     });
 
     const pullRequestCommit = pullRequestBuild.createCommit(commitAttributes);
