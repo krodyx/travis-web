@@ -22,31 +22,24 @@ export default TravisRoute.extend({
   },
 
   fetchCronJobs() {
-    var repo = this.modelFor('repo');
-    var apiEndpoint = config.apiEndpoint;
+    const repo = this.modelFor('repo');
+    const canCreateCron = repo.get('permissions.create_cron');
 
-    return Ember.$.ajax(apiEndpoint + '/v3/repo/' + repo.get('id'), {
-      headers: {
-        Authorization: 'token ' + this.auth.token()
-      }
-    }).then(function (response) {
-      if (response['@permissions']['create_cron']) {
-        return Ember.Object.create({
-          enabled: true,
-          jobs: repo.get('cronJobs')
-        });
-      } else {
-        return Ember.Object.create({
-          enabled: false,
-          jobs: []
-        });
-      }
-    });
+    if (canCreateCron) {
+      return Ember.Object.create({
+        enabled: true,
+        jobs: repo.get('cronJobs')
+      });
+    } else {
+      return Ember.Object.create({
+        enabled: false,
+        jobs: []
+      });
+    }
   },
 
   fetchBranches() {
-    var repo;
-    repo = this.modelFor('repo');
+    const repo = this.modelFor('repo');
     return repo.get('branches.promise');
   },
 

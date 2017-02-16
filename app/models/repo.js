@@ -71,19 +71,15 @@ const Repo = Model.extend({
 
   branches: Ember.computed(function () {
     var id = this.get('id');
-    return this.store.filter('branch', {
+    return this.store.query('branch', {
       repository_id: id
-    }, function (b) {
-      return b.get('repoId') === id;
     });
   }),
 
   cronJobs: Ember.computed(function () {
-    var id = this.get('id');
-    return this.store.filter('cron', {
+    const id = this.get('id');
+    return this.store.query('cron', {
       repository_id: id
-    }, function (cron) {
-      return cron.get('branch.repoId') === id;
     });
   }),
 

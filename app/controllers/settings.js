@@ -1,21 +1,24 @@
 import Ember from 'ember';
+import computed, { alias, sort, filterBy } from 'ember-computed-decorators';
 
 export default Ember.Controller.extend({
-  unsortedEnvVars: Ember.computed.filterBy('model.envVars', 'isNew', false),
+  @filterBy('model.envVars', 'isNew', false) unsortedEnvVars: null,
+
   envVarSorting: ['name'],
-  envVars: Ember.computed.sort('unsortedEnvVars', 'envVarSorting'),
+  @sort('unsortedEnvVars', 'envVarSorting') envVars: null,
 
-  branchesWithoutCron: Ember.computed('model.cronJobs.jobs.@each', function () {
-    var cronJobs = this.get('model.cronJobs.jobs');
-    var branches = this.get('model.branches').filter(function (branch) {
-      return branch.get('exists_on_github');
-    });
-    return branches.filter(function (branch) {
-      return ! cronJobs.any(cron => branch.get('name') === cron.get('branch.name'));
-    });
-  }),
+  @alias('model.cronJobs.jobs.[]') cronJobs: null,
 
-  sortedBranchesWithoutCron: Ember.computed.sort('branchesWithoutCron', function (a, b) {
+  @computed('cronJobs', 'model.branches')
+  branchesWithoutCron(cronJobs, branches) {
+    return branches
+             .filter(branch => branch.get('exists_on_github'))
+             .filter(branch => {
+               return ! cronJobs.any(cron => branch.get('name') === cron.get('branch.name'));
+             });
+  },
+
+  @sort('branchesWithoutCron', (a, b) => {
     if (a.get('defaultBranch')) {
       return -1;
     } else if (b.get('defaultBranch')) {
@@ -23,16 +26,13 @@ export default Ember.Controller.extend({
     } else {
       return a.get('name') > b.get('name');
     }
-  }),
+  }) sortedBranchesWithoutCron: null,
 
-  showAutoCancellationSwitches: Ember.computed(
-    'model.settings.auto_cancel_pushes',
-    'model.settings.auto_cancel_pull_requests', function () {
-      const settings = this.get('model.settings');
-
-      return settings.hasOwnProperty('auto_cancel_pull_requests') ||
-        settings.hasOwnProperty('auto_cancel_pushes');
-    }),
+  @computed('model.settings')
+  showAutoCancellationSwitches(settings) {
+    return settings.hasOwnProperty('auto_cancel_pushes')
+      || settings.hasOwnProperty('auto_cancel_pull_requests');
+  },
 
   actions: {
     sshKeyAdded(sshKey) {

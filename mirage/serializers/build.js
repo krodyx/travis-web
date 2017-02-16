@@ -24,10 +24,10 @@ export default Serializer.extend({
     };
 
     if (!embedded) {
-       if (object.commit) {
+      if (object.commit) {
         const serializer = this.serializerFor('commit-v3');
         response.commit = serializer.serialize(object.commit, request);
-       }
+      }
 
       if (object.repository) {
         const serializer = this.serializerFor('repository');

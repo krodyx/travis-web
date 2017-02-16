@@ -3,8 +3,6 @@ import { test } from 'qunit';
 import moduleForAcceptance from 'travis/tests/helpers/module-for-acceptance';
 import page from 'travis/tests/pages/build-list';
 
-import Ember from 'ember';
-
 moduleForAcceptance('Acceptance | repo build list routes', {
   beforeEach() {
     const currentUser = server.create('user', {

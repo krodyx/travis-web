@@ -70,8 +70,9 @@ export default function () {
     };
   });
 
-  this.get('/v3/repo/:id/crons', function (schema/* , request*/) {
-    return schema.crons.all();
+  this.get('/v3/repo/:repositoryId/crons', function (schema, request) {
+    const { repositoryId } = request.params;
+    return this.serialize(schema.crons.where({ repositoryId }), 'cron');
   });
 
   this.get('/cron/:id');
@@ -251,7 +252,6 @@ export default function () {
 
   this.get('/repo/:repo_id/builds', function (schema, request) {
     const builds = schema.builds.where({ repositoryId: request.params.repo_id });
-    console.log({builds});
 
     /**
       * TODO remove this once the seializers/build is removed.
@@ -270,13 +270,13 @@ export default function () {
   });
 
   // UNCOMMENT THIS FOR LOGGING OF HANDLED REQUESTS
-  this.pretender.handledRequest = function (verb, path, request) {
-    console.log('Handled this request:', `${verb} ${path}`, request);
-    try {
-      const responseJson = JSON.parse(request.responseText);
-      console.log(responseJson);
-    } catch (e) {}
-  };
+  // this.pretender.handledRequest = function (verb, path, request) {
+  //   console.log('Handled this request:', `${verb} ${path}`, request);
+  //   try {
+  //     const responseJson = JSON.parse(request.responseText);
+  //     console.log(responseJson);
+  //   } catch (e) {}
+  // };
 }
 
 /*

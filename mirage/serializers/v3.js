@@ -4,7 +4,6 @@ export default ActiveModelSerializer.extend({
   embed: true,
 
   serialize(object) {
-
     let json = ActiveModelSerializer.prototype.serialize.apply(this, arguments);
 
     let type = Object.keys(json)[0];

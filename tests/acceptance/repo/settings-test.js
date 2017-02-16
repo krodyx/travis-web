@@ -13,7 +13,7 @@ moduleForAcceptance('Acceptance | repo settings', {
 
     signInUser(currentUser);
 
-    // create organizatin
+    // create organization
     server.create('account', {
       name: 'Feminist Killjoys',
       type: 'organization',
@@ -56,12 +56,16 @@ moduleForAcceptance('Acceptance | repo settings', {
 
     const dailyBranch = server.create('branch', {
       name: 'daily-branch',
-      id: `/v3/repos/${repoId}/branches/daily-branch`
+      id: `/v3/repos/${repoId}/branches/daily-branch`,
+      exists_on_github: true,
+      repository,
     });
 
     const weeklyBranch = server.create('branch', {
       name: 'weekly-branch',
-      id: `/v3/repos/${repoId}/branches/weekly-branch`
+      id: `/v3/repos/${repoId}/branches/weekly-branch`,
+      exists_on_github: true,
+      repository,
     });
 
     this.dailyCron = server.create('cron', {
@@ -69,7 +73,7 @@ moduleForAcceptance('Acceptance | repo settings', {
       dont_run_if_recent_build_exists: false,
       last_run: moment(),
       next_run: moment().add(1, 'days'),
-      repository_id: repoId,
+      repository,
       branchId: dailyBranch.id
     });
 
@@ -78,7 +82,7 @@ moduleForAcceptance('Acceptance | repo settings', {
       dont_run_if_recent_build_exists: true,
       last_run: moment(),
       next_run: moment().add(1, 'weeks'),
-      repository_id: repoId,
+      repository,
       branchId: weeklyBranch.id
     });
   }
